@@ -38,11 +38,7 @@ val gridLength: Int = 35
 @Composable
 fun Screen(
     modifier: Modifier = Modifier,
-//           snakeViewModel: SnakeViewModel = SnakeViewModel()
 ) {
-
-//    var snakeObject = remember{ SnakePosition()}
-
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -53,25 +49,10 @@ fun Screen(
             modifier: Modifier,
             snakeViewModel: SnakeViewModel = SnakeViewModel()
         ) {
-//        var continew by remember {
-//            mutableStateOf(0)
-//        }
-//        var score = remember { 0 }
-//        var duration = remember { 0L }
             val colors = generateColorGrid(coordinates = snakeViewModel.coordinates)
-
-//    stop(((ceil(score.toFloat()/10))*10).toLong())
-
-//        if (score % 5 == 0 && duration <= 501) {
-//            duration += 3
-//        }
-//        stop(501 / duration)
-//        score++
-
             ColorGrid(colors, gridWidth, modifier = modifier, cellSize = 18.dp)
-//        continew++
-
         }
+
         DisplayGrid(modifier)
 
         Row(
@@ -117,17 +98,7 @@ fun generateColorGrid(coordinates: List<Pair<Int, Int>>): List<Color> {
             }
         }
     }
-//    return List(width * length) { generateRandomColor() }
     return coloursList
-}
-
-fun generateRandomColor(): Color {
-    return Color(
-        red = Random.nextFloat(),
-        green = Random.nextFloat(),
-        blue = Random.nextFloat(),
-        alpha = 1f
-    )
 }
 
 @Composable
