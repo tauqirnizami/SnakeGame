@@ -19,10 +19,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,30 +26,30 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import kotlin.random.Random
 
 val gridWidth: Int = 20
 val gridLength: Int = 35
 
+        @Composable
+        fun DisplayGrid(
+            modifier: Modifier,
+            snakeViewModel: SnakeViewModel
+        ) {
+            val colors = generateColorGrid(coordinates = snakeViewModel.coordinates)
+            ColorGrid(colors, gridWidth, modifier = modifier, cellSize = 18.dp)
+        }
 @Composable
 fun Screen(
     modifier: Modifier = Modifier,
+    snakeViewModel: SnakeViewModel = SnakeViewModel()
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        @Composable
-        fun DisplayGrid(
-            modifier: Modifier,
-            snakeViewModel: SnakeViewModel = SnakeViewModel()
-        ) {
-            val colors = generateColorGrid(coordinates = snakeViewModel.coordinates)
-            ColorGrid(colors, gridWidth, modifier = modifier, cellSize = 18.dp)
-        }
 
-        DisplayGrid(modifier)
+        DisplayGrid(modifier, snakeViewModel = snakeViewModel)
 
         Row(
             modifier = Modifier,
@@ -80,21 +76,17 @@ fun Screen(
 }
 
 fun generateColorGrid(coordinates: List<Pair<Int, Int>>): List<Color> {
-
     val coloursList: MutableList<Color> = mutableListOf()
     for (i in 1..gridLength) {
         for (j in 1..gridWidth) {
-            if (coordinates.any{it == Pair(j, i)}){
+            if (coordinates.any { it == Pair(i, j) }) {
                 coloursList.add(Color.White)
-            }
-            else if(Pair(j, i) == foodCoordinates){
+            } else if (Pair(j, i) == foodCoordinates) {
                 coloursList.add(Color.LightGray)
-            }
-            else if(Pair(j, i) == giantFoodCoordinates){
+            } else if (Pair(j, i) == giantFoodCoordinates) {
                 coloursList.add(Color.DarkGray)
-            }
-            else{
-                coloursList.add(Color.White)
+            } else {
+                coloursList.add(Color.Yellow)
             }
         }
     }

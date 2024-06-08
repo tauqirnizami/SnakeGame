@@ -14,9 +14,10 @@ var foodCoordinates: Pair<Int, Int> = Pair(14, 14)
 var score = 0L
 var direction = 0
 var giantFoodCoordinates: Pair<Int, Int>? = null
+var giantFoodCounter: Int = 0
 
 class SnakeViewModel() : ViewModel() {
-        /*Pair(length/y-coordinate, width/x-coordinate)*/
+    /*Pair(length/y-coordinate, width/x-coordinate)*/
     var coordinates = mutableStateListOf(Pair(16, 17), Pair(17, 17), Pair(18, 17))
         private set
 
@@ -32,7 +33,7 @@ class SnakeViewModel() : ViewModel() {
 
     init {
         viewModelScope.launch(Dispatchers.Default) {
-//            launch {
+            delay(1000L)
             while (gameGoing) {
                 delay(delayInMillis)
                 delayChange()
@@ -60,6 +61,7 @@ class SnakeViewModel() : ViewModel() {
         if (newHead == foodCoordinates) {
             foodCoordinates = food(giantFoodCoordinates)
             score++
+            giantFoodCounter++
             val tail = coordinates.last()
             coordinates.add(tail)
         }
@@ -68,14 +70,17 @@ class SnakeViewModel() : ViewModel() {
             gameGoing = false
         }
 
-        if (score % 8 == 0L) {
+        if (giantFoodCounter % 8 == 0 && giantFoodCounter!=0) {
             giantFoodCoordinates = food(foodCoordinates)
             viewModelScope.launch(Dispatchers.Default) {
                 delay((if (score < 30) 15 else if (score < 100) 10 else if (score < 300) 6 else 4) * 1000L)
                 giantFoodCoordinates = null
+                giantFoodCounter = 0
             }
         }
+
         if (newHead == giantFoodCoordinates) {
+            giantFoodCounter = 0
             score += 5
             var tail = coordinates.last()
             coordinates.add(tail)
