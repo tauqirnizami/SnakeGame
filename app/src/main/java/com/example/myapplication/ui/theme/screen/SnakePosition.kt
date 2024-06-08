@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-var foodCoordinates: Pair<Int, Int> = Pair(14, 14)
+var foodCoordinates: Pair<Int, Int> = Pair(14, 13)
 var score = 0L
 var direction = 0
 var giantFoodCoordinates: Pair<Int, Int>? = null
