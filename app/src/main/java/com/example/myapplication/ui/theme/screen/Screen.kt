@@ -27,17 +27,18 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
-val gridWidth: Int = 20
-val gridLength: Int = 35
+const val gridWidth: Int = 20
+const val gridLength: Int = 35
 
-        @Composable
-        fun DisplayGrid(
-            modifier: Modifier,
-            snakeViewModel: SnakeViewModel
-        ) {
-            val colors = generateColorGrid(coordinates = snakeViewModel.coordinates)
-            ColorGrid(colors, gridWidth, modifier = modifier, cellSize = 18.dp)
-        }
+@Composable
+fun DisplayGrid(
+    modifier: Modifier,
+    snakeViewModel: SnakeViewModel
+) {
+    val colors = generateColorGrid(coordinates = snakeViewModel.coordinates)
+    ColorGrid(colors, modifier = modifier, cellSize = 18.dp)
+}
+
 @Composable
 fun Screen(
     modifier: Modifier = Modifier,
@@ -81,9 +82,9 @@ fun generateColorGrid(coordinates: List<Pair<Int, Int>>): List<Color> {
         for (j in 1..gridWidth) {
             if (coordinates.any { it == Pair(i, j) }) {
                 coloursList.add(Color.White)
-            } else if (Pair(j, i) == foodCoordinates) {
+            } else if (Pair(i, j) == foodCoordinates) {
                 coloursList.add(Color.LightGray)
-            } else if (Pair(j, i) == giantFoodCoordinates) {
+            } else if (Pair(i, j) == giantFoodCoordinates) {
                 coloursList.add(Color.DarkGray)
             } else {
                 coloursList.add(Color.Yellow)
@@ -94,9 +95,9 @@ fun generateColorGrid(coordinates: List<Pair<Int, Int>>): List<Color> {
 }
 
 @Composable
-fun ColorGrid(colors: List<Color>, width: Int, cellSize: Dp, modifier: Modifier = Modifier) {
+fun ColorGrid(colors: List<Color>, cellSize: Dp, modifier: Modifier = Modifier) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(width),
+        columns = GridCells.Fixed(gridWidth),
         modifier = modifier
     ) {
         items(colors) { color ->
