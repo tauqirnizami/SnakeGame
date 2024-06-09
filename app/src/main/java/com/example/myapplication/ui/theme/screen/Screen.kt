@@ -73,19 +73,19 @@ fun Screen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Button(onClick = { direction = 2 }) {
+            Button(onClick = { directions.add(2) }) {
                 Icon(imageVector = Icons.Filled.KeyboardArrowLeft, contentDescription = "Left")
             }
             Column {
-                Button(onClick = { direction = 0 }) {
+                Button(onClick = { directions.add(0) }) {
                     Icon(imageVector = Icons.Filled.KeyboardArrowUp, contentDescription = "Up")
                 }
                 Spacer(modifier = Modifier.height(13.dp))
-                Button(onClick = { direction = 1 }) {
+                Button(onClick = { directions.add(1) }) {
                     Icon(imageVector = Icons.Filled.KeyboardArrowDown, contentDescription = "Down")
                 }
             }
-            Button(onClick = { direction = 3 }) {
+            Button(onClick = { directions.add(3) }) {
                 Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = "Right")
             }
         }

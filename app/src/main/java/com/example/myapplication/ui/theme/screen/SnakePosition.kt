@@ -12,7 +12,8 @@ import kotlinx.coroutines.launch
 
 var foodCoordinates: Pair<Int, Int> = Pair(10, 11)
 var score = 0L
-var direction = 0
+//var direction = 0
+var directions = mutableStateListOf(0)
 var giantFoodCoordinates: Pair<Int, Int>? = null
 var giantFoodCounter: Int = 1
 
@@ -37,12 +38,14 @@ class SnakeViewModel : ViewModel() {
 
         // Compute the new head position based on the direction
         val head = coordinates.first()
-        val newHead = when (direction) {
+        val newHead = when (directions[0]) {
             0 -> Pair(if (head.first > 1) head.first - 1 else gridLength, head.second) // UP
             1 -> Pair(if (head.first < gridLength) head.first + 1 else 1, head.second) // DOWN
             2 -> Pair(head.first, if (head.second > 1) head.second - 1 else gridWidth) // LEFT
             else -> Pair(head.first, if (head.second < gridWidth) head.second + 1 else 1) // RIGHT
         }
+        if (directions.size>1)
+            directions.removeAt(0)
 
         // Update the coordinates with the new head and shift the body
         coordinates.add(0, newHead)
