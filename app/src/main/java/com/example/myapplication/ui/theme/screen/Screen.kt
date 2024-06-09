@@ -19,9 +19,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -44,7 +47,11 @@ fun DisplayGrid(
     snakeViewModel: SnakeViewModel
 ) {
     val colors = generateColorGrid(coordinates = snakeViewModel.coordinates)
+    Column {
     ColorGrid(colors, modifier = modifier, cellSize = 15.dp)
+        Text(text = "Score = $score")
+    }
+    
 }
 
 @Composable
@@ -67,7 +74,7 @@ fun Screen(
             horizontalArrangement = Arrangement.Center
         ) {
             Button(onClick = { direction = 2 }) {
-                Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Left")
+                Icon(imageVector = Icons.Filled.KeyboardArrowLeft, contentDescription = "Left")
             }
             Column {
                 Button(onClick = { direction = 0 }) {
@@ -79,7 +86,7 @@ fun Screen(
                 }
             }
             Button(onClick = { direction = 3 }) {
-                Icon(imageVector = Icons.Filled.ArrowForward, contentDescription = "Right")
+                Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = "Right")
             }
         }
     }
@@ -90,13 +97,13 @@ fun generateColorGrid(coordinates: List<Pair<Int, Int>>): List<Color> {
     for (i in 1..gridLength) {
         for (j in 1..gridWidth) {
             if (coordinates.any { it == Pair(i, j) }) {
-                coloursList.add(Color.White)
-            } else if (Pair(i, j) == foodCoordinates) {
-                coloursList.add(Color.LightGray)
-            } else if (Pair(i, j) == giantFoodCoordinates) {
                 coloursList.add(Color.DarkGray)
+            } else if (Pair(i, j) == foodCoordinates) {
+                coloursList.add(Color.Gray)
+            } else if (Pair(i, j) == giantFoodCoordinates) {
+                coloursList.add(Color.Black)
             } else {
-                coloursList.add(Color.Yellow)
+                coloursList.add(Color.White)
             }
         }
     }
