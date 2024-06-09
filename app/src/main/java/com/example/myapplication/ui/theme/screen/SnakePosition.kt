@@ -12,8 +12,7 @@ import kotlinx.coroutines.launch
 
 var foodCoordinates: Pair<Int, Int> = Pair(10, 11)
 var score = 0L
-//var direction = 0
-var directions = mutableStateListOf(0)
+var directions = mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
 var giantFoodCoordinates: Pair<Int, Int>? = null
 var giantFoodCounter: Int = 1
 
@@ -26,7 +25,7 @@ class SnakeViewModel : ViewModel() {
 
     init {
         viewModelScope.launch(Dispatchers.Default) {
-            delay(1000L) //This is to let allow the viewModel to setup properly before being used. I was getting error due to usage of state variable (in viewModel) before waiting for the viewModel to be able to initialize properly first
+            delay(1000L) //This is to let the viewModel to setup properly before being used. I was getting error due to usage of state variable (probably "coordinates") before waiting for the viewModel to be able to initialize properly first
             while (gameGoing) {
                 delay(if (score < 500) 500 - score else 0) //This controls the snake speed
                 coordinatesUpdation()
