@@ -10,16 +10,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-var foodCoordinates: Pair<Int, Int> = Pair(14, 13)
+var foodCoordinates: Pair<Int, Int> = Pair(10, 11)
 var score = 0L
 var direction = 0
 var giantFoodCoordinates: Pair<Int, Int>? = null
 var giantFoodCounter: Int = 1
-//var cooperation = 0
 
 class SnakeViewModel : ViewModel() {
     /*Pair(length/y-coordinate, width/x-coordinate)*/
-    var coordinates = mutableStateListOf(Pair(16, 17), Pair(17, 17), Pair(18, 17))
+    var coordinates = mutableStateListOf(Pair(13, 16), Pair(14, 16), Pair(15, 16))
         private set
 
     private var gameGoing by mutableStateOf(true)
@@ -28,7 +27,7 @@ class SnakeViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.Default) {
             delay(1000L) //This is to let allow the viewModel to setup properly before being used. I was getting error due to usage of state variable (in viewModel) before waiting for the viewModel to be able to initialize properly first
             while (gameGoing) {
-                delay(if (score < 500) 500-score else 0)
+                delay(if (score < 500) 500 - score else 0)
                 coordinatesUpdation()
             }
         }
@@ -63,29 +62,25 @@ class SnakeViewModel : ViewModel() {
 
         if (giantFoodCounter % 9 == 0) {
             giantFoodCoordinates = food(foodCoordinates)
+            giantFoodCounter = 1
             viewModelScope.launch(Dispatchers.Default) {
                 delay((if (score < 30) 15 else if (score < 100) 10 else if (score < 300) 6 else 4) * 1000L)
                 giantFoodCoordinates = null
-                giantFoodCounter = 1
             }
         }
 
         if (newHead == giantFoodCoordinates) {
             giantFoodCounter = 1
             score += 5
-//            var tail = coordinates.last()
+//            for (i in 1 .. 5) {
+            coordinates.add(coordinates.last())
+//            }
             coordinates.add(coordinates.last())
 
-//            tail = coordinates.last()
             coordinates.add(coordinates.last())
 
-//            tail = coordinates.last()
             coordinates.add(coordinates.last())
 
-//            tail = coordinates.last()
-            coordinates.add(coordinates.last())
-
-//            tail = coordinates.last()
             coordinates.add(coordinates.last())
         }
     }
