@@ -55,6 +55,14 @@ fun Screen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
+        /***Don't know why the commented code below wasn't updating when coordinates are updated!
+         * Had to create a separate "DisplayGrid" function for it!
+         * Pls correct it and make it even more optimized if possible!!!***/
+//        val colors = generateColorGrid(coordinates = snakeViewModel.coordinates)
+//        Column {
+//            ColorGrid(colors, modifier = modifier, cellSize = 15.dp)
+//            Text(text = "Score = $score")
+//        }
         DisplayGrid(modifier, snakeViewModel = snakeViewModel)
 
         Row(
