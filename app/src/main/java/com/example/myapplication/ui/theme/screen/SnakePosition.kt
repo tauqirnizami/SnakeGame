@@ -24,6 +24,12 @@ class SnakeViewModel : ViewModel() {
     private var gameGoing by mutableStateOf(true)
 
     init {
+        foodCoordinates = Pair(10, 11)
+        score = 0L
+        directions = mutableStateListOf(0)
+        giantFoodCoordinates = null
+        giantFoodCounter = 1
+
         viewModelScope.launch(Dispatchers.Default) {
             delay(1000L) //This is to let the viewModel to setup properly before being used. I was getting error due to usage of state variable (probably "coordinates") before waiting for the viewModel to be able to initialize properly first
             while (gameGoing) {
@@ -43,8 +49,9 @@ class SnakeViewModel : ViewModel() {
             2 -> Pair(head.first, if (head.second > 1) head.second - 1 else gridWidth) // LEFT
             else -> Pair(head.first, if (head.second < gridWidth) head.second + 1 else 1) // RIGHT
         }
-        if (directions.size>1)
+        if (directions.size>1) {
             directions.removeAt(0)
+        }
 
         // Update the coordinates with the new head and shift the body
         coordinates.add(0, newHead)
@@ -58,10 +65,12 @@ class SnakeViewModel : ViewModel() {
             coordinates.add(coordinates.last())
         }
 
+        //Getting Out
         if (coordinates.drop(1).any { it == newHead }) {
             gameGoing = false
         }
 
+        //Giant Food
         if (giantFoodCounter % 9 == 0) {
             giantFoodCoordinates = food(foodCoordinates)
             giantFoodCounter = 1
