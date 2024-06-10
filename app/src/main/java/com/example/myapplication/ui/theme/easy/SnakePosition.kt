@@ -31,7 +31,7 @@ class SnakeViewModel : ViewModel() {
         giantFoodCounter = 1
 
         viewModelScope.launch(Dispatchers.Default) {
-            delay(1000L) //This is to let the viewModel to setup properly before being used. I was getting error due to usage of state variable (probably "coordinates") before waiting for the viewModel to be able to initialize properly first
+            delay(550L) //This is to let the viewModel to setup properly before being used. I was getting error due to usage of state variable (probably "coordinates") before waiting for the viewModel to be able to initialize properly first
 
             while (gameGoing) {
                 delay(if (score < 500) 500 - score else 0) //This controls the snake speed
