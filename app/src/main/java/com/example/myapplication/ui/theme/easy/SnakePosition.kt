@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.theme.screen
+package com.example.myapplication.ui.theme.easy
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -32,6 +32,7 @@ class SnakeViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.Default) {
             delay(1000L) //This is to let the viewModel to setup properly before being used. I was getting error due to usage of state variable (probably "coordinates") before waiting for the viewModel to be able to initialize properly first
+
             while (gameGoing) {
                 delay(if (score < 500) 500 - score else 0) //This controls the snake speed
                 coordinatesUpdation()
@@ -42,15 +43,15 @@ class SnakeViewModel : ViewModel() {
     private suspend fun coordinatesUpdation() {
 
         // Compute the new head position based on the direction
+        if (directions.size>1) {
+            directions.removeAt(0)
+        }
         val head = coordinates.first()
         val newHead = when (directions[0]) {
             0 -> Pair(if (head.first > 1) head.first - 1 else gridLength, head.second) // UP
             1 -> Pair(if (head.first < gridLength) head.first + 1 else 1, head.second) // DOWN
             2 -> Pair(head.first, if (head.second > 1) head.second - 1 else gridWidth) // LEFT
             else -> Pair(head.first, if (head.second < gridWidth) head.second + 1 else 1) // RIGHT
-        }
-        if (directions.size>1) {
-            directions.removeAt(0)
         }
 
         // Update the coordinates with the new head and shift the body

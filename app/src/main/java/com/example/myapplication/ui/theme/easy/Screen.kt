@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.theme.screen
+package com.example.myapplication.ui.theme.easy
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +31,7 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 
 const val gridWidth: Int = 18
 const val gridLength: Int = 34
+val cellSize: Dp = 15.dp
 
 @Composable
 fun DisplayGrid(
@@ -39,7 +40,7 @@ fun DisplayGrid(
 ) {
     val colors = generateColorGrid(coordinates = snakeViewModel.coordinates)
     Column {
-    ColorGrid(colors, modifier = modifier, cellSize = 15.dp)
+    ColorGrid(colors = colors, modifier = modifier)
         Text(text = "Score = $score")
     }
     
@@ -108,7 +109,7 @@ fun generateColorGrid(coordinates: List<Pair<Int, Int>>): List<Color> {
 }
 
 @Composable
-fun ColorGrid(colors: List<Color>, cellSize: Dp, modifier: Modifier = Modifier) {
+fun ColorGrid(colors: List<Color>, modifier: Modifier = Modifier) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(gridWidth),
         modifier = modifier
