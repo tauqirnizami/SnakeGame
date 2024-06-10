@@ -47,15 +47,15 @@ class DifficultSnakeViewModel : ViewModel() {
     private suspend fun coordinatesUpdation() {
 
         // Compute the new head position based on the direction
+        if (directions.size>1) {
+            directions.removeAt(0)
+        }
         val head = coordinates.first()
         val newHead = when (directions[0]) {
             0 -> Pair(head.first - 1, head.second) // UP
             1 -> Pair(head.first + 1, head.second) // DOWN
             2 -> Pair(head.first, head.second - 1) // LEFT
             else -> Pair(head.first,head.second + 1) // RIGHT
-        }
-        if (directions.size>1) {
-            directions.removeAt(0)
         }
 
         // Update the coordinates with the new head and shift the body
