@@ -19,26 +19,25 @@ import kotlinx.coroutines.launch
 
 class DifficultSnakeViewModel : ViewModel() {
     /*Pair(length/y-coordinate, width/x-coordinate)*/
-    var coordinates = mutableStateListOf(Pair(31, 14), Pair(32, 14), Pair(33, 14))
+    var coordinates = mutableStateListOf(Pair(14, 14), Pair(15, 14), Pair(16, 14))
         private set
 
     private var gameGoing by mutableStateOf(true)
 
-    var extraWallsCoordinates: List<Pair<Int, Int>>
+    private val eachExtraWallWidthPlusOne = 4
+    val extraWalls: List<Pair<Int, Int>> = listOf(Pair(2,3), Pair(3,4), Pair(4,5))
 
     init {
         foodCoordinates = Pair(10, 9)
         score = 0L
-        directions = mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
+        directions =
+            mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
         giantFoodCoordinates = null
         giantFoodCounter = 1
 
-        extraWallsCoordinates = walls()
-
-        viewModelScope.launch(Dispatchers.Default) {
-            delay(1000L) //This is to let the viewModel to setup properly before being used. I was getting error due to usage of state variable (probably "coordinates") before waiting for the viewModel to be able to initialize properly first
+        viewModelScope.launch(Dispatchers.Main) {
             while (gameGoing) {
-                delay(if (score < 250) 500 - (score *2) else if(score<500) 1 else 0) //This controls the snake speed
+                delay(if (score < 333) 500 - (score * 1.5).toLong() else 0) //This controls the snake speed
                 coordinatesUpdation()
             }
         }
@@ -47,7 +46,7 @@ class DifficultSnakeViewModel : ViewModel() {
     private suspend fun coordinatesUpdation() {
 
         // Compute the new head position based on the direction
-        if (directions.size>1) {
+        if (directions.size > 1) {
             directions.removeAt(0)
         }
         val head = coordinates.first()
@@ -55,7 +54,7 @@ class DifficultSnakeViewModel : ViewModel() {
             0 -> Pair(head.first - 1, head.second) // UP
             1 -> Pair(head.first + 1, head.second) // DOWN
             2 -> Pair(head.first, head.second - 1) // LEFT
-            else -> Pair(head.first,head.second + 1) // RIGHT
+            else -> Pair(head.first, head.second + 1) // RIGHT
         }
 
         // Update the coordinates with the new head and shift the body
@@ -64,23 +63,24 @@ class DifficultSnakeViewModel : ViewModel() {
 
         //Eating Food
         if (newHead == foodCoordinates) {
-            foodCoordinates = food(extraWallsCoordinates + listOf(giantFoodCoordinates))
+            foodCoordinates = food(giantFoodCoordinates)
             score++
             giantFoodCounter++
             coordinates.add(coordinates.last())
         }
 
         //Getting Out
-        if (coordinates.drop(1).any { it == newHead } || newHead.first == 1 || newHead.second == 1 || newHead.first == gridLength || newHead.second == gridWidth) {
+        if (coordinates.drop(1).any { it == newHead } || extraWalls.any { it == newHead } ||
+            newHead.first == 1 || newHead.second == 1 || newHead.first == gridLength || newHead.second == gridWidth) {
             gameGoing = false
         }
 
         //Giant Food
         if (giantFoodCounter % 9 == 0) {
-            giantFoodCoordinates = food(extraWallsCoordinates + listOf(foodCoordinates))
+            giantFoodCoordinates = food(foodCoordinates)
             giantFoodCounter = 1
             viewModelScope.launch(Dispatchers.Default) {
-                delay((if (score < 30) 15 else if (score < 100) 10 else if (score < 300) 6 else 4) * 1000L)
+                delay((if (score < 50) 15 else if (score < 150) 10 else if (score < 300) 6 else 4) * 1000L)
                 giantFoodCoordinates = null
             }
         }
@@ -101,24 +101,40 @@ class DifficultSnakeViewModel : ViewModel() {
         }
     }
 
-    private fun food(busyCoordinates: List<Pair<Int, Int>?>): Pair<Int, Int> {
+    private fun food(otherFood: Pair<Int, Int>?): Pair<Int, Int> {
         var a: Pair<Int, Int>
         do {
-            a = Pair((2..< gridLength).random(), (2..< gridWidth).random())
-        } while (coordinates.any { it == a } || busyCoordinates.any{it == a})
+            a = Pair((2..<gridLength).random(), (2..<gridWidth).random())
+        } while (coordinates.any { it == a } || otherFood == a)
         return a
     }
 
-    private fun walls(): List<Pair<Int, Int>>{
-        val a: MutableList<Pair<Int, Int>> = mutableListOf()
-        var b: Pair<Int, Int>
+    private fun walls(): List<Pair<Int, Int>> {
+        var a: MutableList<Pair<Int, Int>> = mutableListOf()
+        val b: MutableList<Pair<Int, Int>> = mutableListOf()
+        var done = true
         do {
-
             do {
-                b = Pair((2..< gridLength).random(), (2..< gridWidth).random())
-            } while (coordinates.any { it == b } || b == foodCoordinates)
-            a.add(b)
-        }while (a.size<8)
+                b.clear()
+                b.add(
+                        Pair((2 until gridLength).random(), (2 until gridWidth-eachExtraWallWidthPlusOne).random()))
+                b.addAll(listOf( Pair(b[0].first, b[0].second + 1), Pair(b[0].first, b[0].second + 1)))
+
+                for (i in 0..2) {
+                    if (!(coordinates.any { it == b[i] } || b[i] == foodCoordinates || b[i] == Pair(
+                            coordinates[0].first + 1,
+                            coordinates[0].second
+                        ))) {
+                        done = false
+                    }
+                }
+            } while (done)
+            a.addAll(b)
+            a = a.toSet().toMutableList()
+            if (a.size%3 !=0){
+                a.clear()
+            }
+        } while (a.size < 8)
         return a
     }
 }

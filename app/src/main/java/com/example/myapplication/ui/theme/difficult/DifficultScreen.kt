@@ -33,7 +33,7 @@ fun DifficultDisplayGrid(
     modifier: Modifier,
     snakeViewModel: DifficultSnakeViewModel
 ) {
-    val colors = difficultGenerateColorGrid(coordinates = snakeViewModel.coordinates, walls = snakeViewModel.extraWallsCoordinates)
+    val colors = difficultGenerateColorGrid(coordinates = snakeViewModel.coordinates, extraWalls = snakeViewModel.extraWalls)
     Column {
         ColorGrid(colors = colors, modifier = modifier)
         Text(text = "Score = $score")
@@ -77,11 +77,11 @@ fun DifficultScreen(
     }
 }
 
-fun difficultGenerateColorGrid(coordinates: List<Pair<Int, Int>>, walls: List<Pair<Int, Int>>): List<Color> {
+fun difficultGenerateColorGrid(coordinates: List<Pair<Int, Int>>, extraWalls: List<Pair<Int, Int>>): List<Color> {
     val coloursList: MutableList<Color> = mutableListOf()
     for (i in 1..gridLength) {
         for (j in 1..gridWidth) {
-            if (i == 1 || j == 1 || i == gridLength || j == gridWidth || walls.any{it == Pair(i,j)}){
+            if (i == 1 || j == 1 || i == gridLength || j == gridWidth || extraWalls.any{it == Pair(i,j)}){
                 coloursList.add(Color.Red)
             }
             else if (coordinates.any { it == Pair(i, j) }) {

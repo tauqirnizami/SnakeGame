@@ -18,7 +18,7 @@ var giantFoodCounter: Int = 1
 
 class SnakeViewModel : ViewModel() {
     /*Pair(length/y-coordinate, width/x-coordinate)*/
-    var coordinates = mutableStateListOf(Pair(13, 16), Pair(14, 16), Pair(15, 16))
+    var coordinates = mutableStateListOf(Pair(14, 14), Pair(15, 14), Pair(16, 14))
         private set
 
     private var gameGoing by mutableStateOf(true)
@@ -30,8 +30,8 @@ class SnakeViewModel : ViewModel() {
         giantFoodCoordinates = null
         giantFoodCounter = 1
 
-        viewModelScope.launch(Dispatchers.Default) {
-            delay(550L) //This is to let the viewModel to setup properly before being used. I was getting error due to usage of state variable (probably "coordinates") before waiting for the viewModel to be able to initialize properly first
+        viewModelScope.launch(Dispatchers.Main) {
+//            delay(550L) //This is to let the viewModel to setup properly before being used. I was getting error due to usage of state variable (probably "coordinates") before waiting for the viewModel to be able to initialize properly first
 
             while (gameGoing) {
                 delay(if (score < 500) 500 - score else 0) //This controls the snake speed

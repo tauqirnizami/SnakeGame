@@ -31,7 +31,7 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 
 const val gridWidth: Int = 18
 const val gridLength: Int = 34
-val cellSize: Dp = 15.dp
+val cellSize: Dp = 17.dp
 
 @Composable
 fun DisplayGrid(

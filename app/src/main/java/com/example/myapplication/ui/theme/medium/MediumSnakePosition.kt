@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class MediumSnakeViewModel : ViewModel() {
     /*Pair(length/y-coordinate, width/x-coordinate)*/
-    var coordinates = mutableStateListOf(Pair(31, 14), Pair(32, 14), Pair(33, 14))
+    var coordinates = mutableStateListOf(Pair(14, 14), Pair(15, 14), Pair(16, 14))
         private set
 
     private var gameGoing by mutableStateOf(true)
@@ -31,8 +31,8 @@ class MediumSnakeViewModel : ViewModel() {
         giantFoodCoordinates = null
         giantFoodCounter = 1
 
-        viewModelScope.launch(Dispatchers.Default) {
-            delay(550L) //This is to let the viewModel to setup properly before being used. I was getting error due to usage of state variable (probably "coordinates") before waiting for the viewModel to be able to initialize properly first
+        viewModelScope.launch(Dispatchers.Main) {
+//            delay(550L) //This is to let the viewModel to setup properly before being used. I was getting error due to usage of state variable (probably "coordinates") before waiting for the viewModel to be able to initialize properly first
             while (gameGoing) {
                 delay(if (score < 333) 500 - (score*1.5).toLong() else 0) //This controls the snake speed
                 coordinatesUpdation()
