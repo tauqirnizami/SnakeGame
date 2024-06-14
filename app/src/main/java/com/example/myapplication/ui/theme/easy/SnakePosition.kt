@@ -12,12 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-var foodCoordinates: Pair<Int, Int> = Pair(10, 11)
-var score = 0L
-var directions = mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
-var giantFoodCoordinates: Pair<Int, Int>? = null
-var giantFoodCounter: Int = 1
-var gameGoing = true
+//var gameGoing = true
 
 class SnakeViewModel : ViewModel() {
     /*Pair(length/y-coordinate, width/x-coordinate)*/
@@ -25,15 +20,22 @@ class SnakeViewModel : ViewModel() {
 //        private set
     private val _coordinates = MutableStateFlow(listOf(Pair(14, 14), Pair(15, 14), Pair(16, 14)))
     val coordinates: StateFlow<List<Pair<Int, Int>>> = _coordinates
-//    var gameGoing by mutableStateOf(true)
+
+    var gameGoing by mutableStateOf(true)
+
+var foodCoordinates: Pair<Int, Int> = Pair(10, 11)
+var score = 0L
+var directions = mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
+var giantFoodCoordinates: Pair<Int, Int>? = null
+private var giantFoodCounter: Int = 1
 
     init {
-        gameGoing = true
+ /*       gameGoing = true
         foodCoordinates = Pair(10, 11)
         score = 0L
         directions = mutableStateListOf(0)
         giantFoodCoordinates = null
-        giantFoodCounter = 1
+        giantFoodCounter = 1*/
 
         viewModelScope.launch(Dispatchers.Main) {
 //            delay(550L) //This is to let the viewModel to setup properly before being used. I was getting error due to usage of state variable (probably "coordinates") before waiting for the viewModel to be able to initialize properly first
@@ -52,6 +54,12 @@ class SnakeViewModel : ViewModel() {
         _coordinates.value = currentList
     }
 
+    private fun eatFood(){
+        val currentList = _coordinates.value.toMutableList()
+        currentList.add(currentList.last())
+        _coordinates.value = currentList
+    }
+
     private suspend fun coordinatesUpdation() {
 
         // Compute the new head position based on the direction
@@ -67,25 +75,26 @@ class SnakeViewModel : ViewModel() {
         }
 
         // Update the coordinates with the new head and shift the body
-        coordinates.add(0, newHead)
-        coordinates.removeLast()
+        snakeMove(newHead = newHead)
+
+        //Getting Out
+            val currentList = _coordinates.value.toMutableList()
+        if (currentList.drop(1).any { it == newHead }) {
+            gameGoing = false
+        }
 
         //Eating Food
         if (newHead == foodCoordinates) {
-            foodCoordinates = food(giantFoodCoordinates)
+            foodCoordinates = food(giantFoodCoordinates, currentList = currentList)
             score++
             giantFoodCounter++
-            coordinates.add(coordinates.last())
-        }
-
-        //Getting Out
-        if (coordinates.drop(1).any { it == newHead }) {
-            gameGoing = false
+//            coordinates.add(coordinates.last())
+            eatFood()
         }
 
         //Giant Food
         if (giantFoodCounter % 9 == 0) {
-            giantFoodCoordinates = food(foodCoordinates)
+            giantFoodCoordinates = food(foodCoordinates, currentList)
             giantFoodCounter = 1
             viewModelScope.launch(Dispatchers.Default) {
                 delay((if (score < 30) 15 else if (score < 100) 10 else if (score < 300) 6 else 4) * 1000L)
@@ -97,23 +106,19 @@ class SnakeViewModel : ViewModel() {
             giantFoodCounter = 1
             score += 5
 
-            coordinates.add(coordinates.last())
-
-            coordinates.add(coordinates.last())
-
-            coordinates.add(coordinates.last())
-
-            coordinates.add(coordinates.last())
-
-            coordinates.add(coordinates.last())
+            eatFood()
+            eatFood()
+            eatFood()
+            eatFood()
+            eatFood()
         }
     }
 
-    private fun food(otherFood: Pair<Int, Int>?): Pair<Int, Int> {
+    private fun food(otherFood: Pair<Int, Int>?, currentList: List<Pair<Int, Int>>): Pair<Int, Int> {
         var a: Pair<Int, Int>
         do {
             a = Pair((1..gridLength).random(), (1..gridWidth).random())
-        } while (coordinates.any { it == a } || otherFood == a)
+        } while (currentList.any { it == a } || otherFood == a)
         return a
     }
 }

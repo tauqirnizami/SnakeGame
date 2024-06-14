@@ -6,33 +6,31 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.ui.theme.easy.directions
-import com.example.myapplication.ui.theme.easy.foodCoordinates
-import com.example.myapplication.ui.theme.easy.gameGoing
-import com.example.myapplication.ui.theme.easy.giantFoodCoordinates
-import com.example.myapplication.ui.theme.easy.giantFoodCounter
 import com.example.myapplication.ui.theme.easy.gridLength
 import com.example.myapplication.ui.theme.easy.gridWidth
-import com.example.myapplication.ui.theme.easy.score
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MediumSnakeViewModel : ViewModel() {
     /*Pair(length/y-coordinate, width/x-coordinate)*/
-    var coordinates = mutableStateListOf(Pair(14, 14), Pair(15, 14), Pair(16, 14))
-        private set
+//    var coordinates = mutableStateListOf(Pair(14, 14), Pair(15, 14), Pair(16, 14))
+//        private set
 
-//    var gameGoing by mutableStateOf(true)
+    private val _coordinates = MutableStateFlow(listOf(Pair(14, 14), Pair(15, 14), Pair(16, 14)))
+    val coordinates: StateFlow<List<Pair<Int, Int>>> = _coordinates
+
+    var gameGoing by mutableStateOf(true)
+
+    var foodCoordinates = Pair(10, 9)
+    var score = 0L
+    var directions = mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
+    var giantFoodCoordinates: Pair<Int,  Int>? = null
+    private var giantFoodCounter = 1
 
     init {
-        gameGoing = true
-        foodCoordinates = Pair(10, 9)
-        score = 0L
-        directions = mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
-        giantFoodCoordinates = null
-        giantFoodCounter = 1
-
         viewModelScope.launch(Dispatchers.Main) {
 //            delay(550L) //This is to let the viewModel to setup properly before being used. I was getting error due to usage of state variable (probably "coordinates") before waiting for the viewModel to be able to initialize properly first
             while (gameGoing) {
@@ -42,13 +40,26 @@ class MediumSnakeViewModel : ViewModel() {
         }
     }
 
+    private fun snakeMove(newHead: Pair<Int, Int>){
+        val currentList = _coordinates.value.toMutableList()
+        currentList.add(0, newHead)
+        currentList.removeLast()
+        _coordinates.value = currentList
+    }
+
+    private fun eatFood(){
+        val currentList = _coordinates.value.toMutableList()
+        currentList.add(currentList.last())
+        _coordinates.value = currentList
+    }
+
     private suspend fun coordinatesUpdation() {
 
         // Compute the new head position based on the direction
         if (directions.size>1) {
             directions.removeAt(0)
         }
-        val head = coordinates.first()
+        val head = coordinates.value.first()
         val newHead = when (directions[0]) {
             0 -> Pair(head.first - 1, head.second) // UP
             1 -> Pair(head.first + 1, head.second) // DOWN
@@ -57,25 +68,25 @@ class MediumSnakeViewModel : ViewModel() {
         }
 
         // Update the coordinates with the new head and shift the body
-        coordinates.add(0, newHead)
-        coordinates.removeLast()
+        snakeMove(newHead)
+
+        //Getting Out
+        val currentList = _coordinates.value.toMutableList()
+        if (currentList.drop(1).any { it == newHead } || newHead.first == 1 || newHead.second == 1 || newHead.first == gridLength || newHead.second == gridWidth) {
+            gameGoing = false
+        }
 
         //Eating Food
         if (newHead == foodCoordinates) {
-            foodCoordinates = food(giantFoodCoordinates)
+            foodCoordinates = food(giantFoodCoordinates, currentList)
             score++
             giantFoodCounter++
-            coordinates.add(coordinates.last())
-        }
-
-        //Getting Out
-        if (coordinates.drop(1).any { it == newHead } || newHead.first == 1 || newHead.second == 1 || newHead.first == gridLength || newHead.second == gridWidth) {
-            gameGoing = false
+            eatFood()
         }
 
         //Giant Food
         if (giantFoodCounter % 9 == 0) {
-            giantFoodCoordinates = food(foodCoordinates)
+            giantFoodCoordinates = food(foodCoordinates, currentList)
             giantFoodCounter = 1
             viewModelScope.launch(Dispatchers.Default) {
                 delay((if (score < 50) 15 else if (score < 150) 10 else if (score < 300) 6 else 4) * 1000L)
@@ -87,23 +98,19 @@ class MediumSnakeViewModel : ViewModel() {
             giantFoodCounter = 1
             score += 5
 
-            coordinates.add(coordinates.last())
-
-            coordinates.add(coordinates.last())
-
-            coordinates.add(coordinates.last())
-
-            coordinates.add(coordinates.last())
-
-            coordinates.add(coordinates.last())
+            eatFood()
+            eatFood()
+            eatFood()
+            eatFood()
+            eatFood()
         }
     }
 
-    private fun food(otherFood: Pair<Int, Int>?): Pair<Int, Int> {
+    private fun food(otherFood: Pair<Int, Int>?, currentList: List<Pair<Int, Int>>): Pair<Int, Int> {
         var a: Pair<Int, Int>
         do {
             a = Pair((2..< gridLength).random(), (2..< gridWidth).random())
-        } while (coordinates.any { it == a } || otherFood == a)
+        } while (currentList.any { it == a } || otherFood == a)
         return a
     }
 }

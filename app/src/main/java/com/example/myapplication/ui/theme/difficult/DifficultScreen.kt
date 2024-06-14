@@ -10,83 +10,95 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.GameOverDialogue
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.ui.theme.easy.ColorGrid
-import com.example.myapplication.ui.theme.easy.GameOverDialogue
-import com.example.myapplication.ui.theme.easy.directions
-import com.example.myapplication.ui.theme.easy.foodCoordinates
-import com.example.myapplication.ui.theme.easy.gameGoing
-import com.example.myapplication.ui.theme.easy.giantFoodCoordinates
 import com.example.myapplication.ui.theme.easy.gridLength
 import com.example.myapplication.ui.theme.easy.gridWidth
-import com.example.myapplication.ui.theme.easy.score
 
-@Composable
-fun DifficultDisplayGrid(
-    modifier: Modifier,
-    snakeViewModel: DifficultSnakeViewModel
-) {
-    val colors = difficultGenerateColorGrid(coordinates = snakeViewModel.coordinates)
-    Column {
-        ColorGrid(colors = colors, modifier = modifier)
-        Text(text = "Score = $score")
-    }
+//@Composable
+//fun DifficultDisplayGrid(
+//    modifier: Modifier,
+//    snakeViewModel: DifficultSnakeViewModel
+//) {
 
-}
+//}
 
 @Composable
 fun DifficultScreen(
     modifier: Modifier = Modifier,
-    snakeViewModel: DifficultSnakeViewModel = DifficultSnakeViewModel(),
+    snakeViewModel: DifficultSnakeViewModel = remember { DifficultSnakeViewModel() },
     navBack: ()-> Unit
 ) {
+    val coordinates by snakeViewModel.coordinates.collectAsState()
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
 
-        if (!gameGoing){
-            GameOverDialogue(text = "Your Score = $score",
-                onClose = { navBack() })
+        if (!snakeViewModel.gameGoing){
+            GameOverDialogue(text = "Your Score = ${snakeViewModel.score}",
+                onClose = { navBack() },
+/*                onRetry = {
+                    snakeViewModel.gameGoing = true
+                    snakeViewModel.foodCoordinates = Pair(10, 11)
+                    snakeViewModel.score = 0L
+                    snakeViewModel.directions = mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
+                    snakeViewModel.giantFoodCoordinates = null
+                    snakeViewModel.giantFoodCounter = 1
+                    snakeViewModel.extraWalls = snakeViewModel.extraWallsGenerator()
+                }*/
+            )
         }
 
-        DifficultDisplayGrid(modifier, snakeViewModel = snakeViewModel)
+    val colors = difficultGenerateColorGrid(coordinates = coordinates, extraWalls = snakeViewModel.extraWalls,
+        foodCoordinates = snakeViewModel.foodCoordinates, giantFoodCoordinates = snakeViewModel.giantFoodCoordinates)
+    Column {
+        ColorGrid(colors = colors, modifier = modifier)
+        Text(text = "Score = ${snakeViewModel.score}")
+    }
+//        DifficultDisplayGrid(modifier, snakeViewModel = snakeViewModel)
 
         Row(
             modifier = Modifier,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Button(onClick = { directions.add(2) }) {
+            FloatingActionButton(onClick = { snakeViewModel.directions.add(2) }) {
                 Icon(imageVector = Icons.Filled.KeyboardArrowLeft, contentDescription = "Left")
             }
             Column {
-                Button(onClick = { directions.add(0) }) {
+                FloatingActionButton(onClick = { snakeViewModel.directions.add(0) }) {
                     Icon(imageVector = Icons.Filled.KeyboardArrowUp, contentDescription = "Up")
                 }
-                Spacer(modifier = Modifier.height(13.dp))
-                Button(onClick = { directions.add(1) }) {
+                Spacer(modifier = Modifier.height(31.dp))
+                FloatingActionButton(onClick = { snakeViewModel.directions.add(1) }) {
                     Icon(imageVector = Icons.Filled.KeyboardArrowDown, contentDescription = "Down")
                 }
             }
-            Button(onClick = { directions.add(3) }) {
+            FloatingActionButton(onClick = { snakeViewModel.directions.add(3) }) {
                 Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = "Right")
             }
         }
     }
 }
 
-fun difficultGenerateColorGrid(coordinates: List<Pair<Int, Int>>): List<Color> {
+fun difficultGenerateColorGrid(coordinates: List<Pair<Int, Int>>, extraWalls: List<Pair<Int, Int>>,
+                               foodCoordinates: Pair<Int, Int>, giantFoodCoordinates: Pair<Int, Int>?): List<Color> {
     val coloursList: MutableList<Color> = mutableListOf()
     for (i in 1..gridLength) {
         for (j in 1..gridWidth) {

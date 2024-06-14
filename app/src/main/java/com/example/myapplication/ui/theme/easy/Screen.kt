@@ -18,10 +18,17 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,31 +38,28 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
+import com.example.myapplication.GameOverDialogue
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
-const val gridWidth: Int = 18
-const val gridLength: Int = 34
-val cellSize: Dp = 17.dp
+const val gridWidth: Int = 21
+const val gridLength: Int = 31
+val cellSize: Dp = 19.dp
 
-@Composable
-fun DisplayGrid(
-    modifier: Modifier,
-    snakeViewModel: SnakeViewModel
-) {
-    val colors = generateColorGrid(coordinates = snakeViewModel.coordinates)
-    Column {
-    ColorGrid(colors = colors, modifier = modifier)
-        Text(text = "Score = $score")
-    }
-    
-}
+//@Composable
+//fun DisplayGrid(
+//    modifier: Modifier,
+//    snakeViewModel: SnakeViewModel
+//) {
+
+//}
 
 @Composable
 fun Screen(
     modifier: Modifier = Modifier,
-    snakeViewModel: SnakeViewModel = SnakeViewModel(),
+    snakeViewModel: SnakeViewModel = remember {SnakeViewModel()},
     navBack: ()-> Unit
 ) {
+        val coordinates by snakeViewModel.coordinates.collectAsState()
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,38 +73,55 @@ fun Screen(
 //            ColorGrid(colors, modifier = modifier, cellSize = 15.dp)
 //            Text(text = "Score = $score")
 //        }
-        if (!gameGoing){
-            GameOverDialogue(text = "Your Score = $score",
-                onClose = { navBack() })
+        if (!snakeViewModel.gameGoing){
+            GameOverDialogue(text = "Your Score = ${snakeViewModel.score}",
+                onClose = { navBack() },
+  /*              onRetry = {
+                    snakeViewModel.gameGoing = true
+                    snakeViewModel.foodCoordinates = Pair(10, 11)
+                    snakeViewModel.score = 0L
+                    snakeViewModel.directions = mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
+                    snakeViewModel.giantFoodCoordinates = null
+                    snakeViewModel.giantFoodCounter = 1
+                }*/
+            )
         }
 
-        DisplayGrid(modifier, snakeViewModel = snakeViewModel)
+
+    val colors = generateColorGrid(coordinates = coordinates, foodCoordinates = snakeViewModel.foodCoordinates,
+        giantFoodCoordinates = snakeViewModel.giantFoodCoordinates)
+    Column {
+    ColorGrid(colors = colors, modifier = modifier)
+        Text(text = "Score = ${snakeViewModel.score}")
+    }
+//        DisplayGrid(modifier, snakeViewModel = snakeViewModel)
 
         Row(
             modifier = Modifier,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Button(onClick = { directions.add(2) }) {
+            FloatingActionButton(onClick = { snakeViewModel.directions.add(2) }) {
                 Icon(imageVector = Icons.Filled.KeyboardArrowLeft, contentDescription = "Left")
             }
             Column {
-                Button(onClick = { directions.add(0) }) {
+                FloatingActionButton(onClick = { snakeViewModel.directions.add(0) }) {
                     Icon(imageVector = Icons.Filled.KeyboardArrowUp, contentDescription = "Up")
                 }
-                Spacer(modifier = Modifier.height(13.dp))
-                Button(onClick = { directions.add(1) }) {
+                Spacer(modifier = Modifier.height(31.dp))
+                FloatingActionButton(onClick = { snakeViewModel.directions.add(1) }) {
                     Icon(imageVector = Icons.Filled.KeyboardArrowDown, contentDescription = "Down")
                 }
             }
-            Button(onClick = { directions.add(3) }) {
+            FloatingActionButton(onClick = { snakeViewModel.directions.add(3) }) {
                 Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = "Right")
             }
         }
     }
 }
 
-fun generateColorGrid(coordinates: List<Pair<Int, Int>>): List<Color> {
+fun generateColorGrid(coordinates: List<Pair<Int, Int>>, foodCoordinates: Pair<Int, Int>,
+                      giantFoodCoordinates: Pair<Int, Int>?): List<Color> {
     val coloursList: MutableList<Color> = mutableListOf()
     for (i in 1..gridLength) {
         for (j in 1..gridWidth) {
@@ -134,31 +155,6 @@ fun ColorGrid(colors: List<Color>, modifier: Modifier = Modifier) {
             )
         }
     }
-}
-
-@Composable
-fun GameOverDialogue(
-    text: String,
-    onClose: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-
-    AlertDialog(
-        onDismissRequest = {
-            onClose()
-        },
-        title = { Text(text = text,
-            textAlign = TextAlign.Justify,
-            fontSize = 17.sp)},
-        modifier = modifier,
-        confirmButton = {
-            TextButton(onClick = {
-                onClose()
-            }) {
-                Text(text = "Close")
-            }
-        }
-    )
 }
 
 @Preview(showBackground = true)
