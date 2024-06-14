@@ -33,96 +33,103 @@ fun LevelsScreen(
 
     modifier: Modifier = Modifier
 ) {
-        Column(
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(45.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Game Modes",
+            modifier = modifier,
+            fontSize = 66.5.sp,
+            fontWeight = FontWeight.ExtraBold,
+            fontStyle = FontStyle.Italic,
+            lineHeight = 71.sp,
+            textAlign = TextAlign.Center,
+            fontFamily = FontFamily(Font(R.font.gamja_flower)),
+        )
+
+        Spacer(modifier = Modifier.height(131.dp))
+
+        Button(
+            onClick = { onClick1() },
             modifier = modifier
-                .fillMaxSize()
-                .padding(45.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(text = "Game Modes",
-                modifier = modifier,
-                fontSize = 66.5.sp,
-                fontWeight = FontWeight.ExtraBold,
-                fontStyle = FontStyle.Italic,
-                lineHeight = 71.sp,
-                textAlign = TextAlign.Center,
-                fontFamily = FontFamily(Font(R.font.gamja_flower)),
+                .fillMaxWidth()
+                .padding(start = 17.dp, end = 17.dp),
+            shape = CutCornerShape(
+                bottomStart = 13.dp,
+                topEnd = 13.dp,
+                topStart = 5.dp,
+                bottomEnd = 5.dp
+            ),
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 10.dp,
+                pressedElevation = 5.dp,
             )
-
-            Spacer(modifier = Modifier.height(131.dp))
-
-            Button(
-                onClick = { onClick1() },
-                modifier = modifier.fillMaxWidth().padding(start = 17.dp, end = 17.dp),
-                shape = CutCornerShape(
-                    bottomStart = 13.dp,
-                    topEnd = 13.dp,
-                    topStart = 5.dp,
-                    bottomEnd = 5.dp
-                ),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 10.dp,
-                    pressedElevation = 5.dp,
-                )
-            ) {
-                Text(
-                    text = "Garden",
-                    fontSize = 25.sp,
-                    lineHeight = 27.sp,
-                    fontFamily = FontFamily(Font(R.font.autour_one)),
-                    textAlign = TextAlign.Center
-                )
-            }
-            Spacer(modifier = Modifier.height(87.dp))
-
-            Button(
-                onClick = { onClick2() },
-                modifier = modifier.fillMaxWidth().padding(start = 17.dp, end = 17.dp),
-                shape = CutCornerShape(
-                    bottomStart = 13.dp,
-                    topEnd = 13.dp,
-                    topStart = 5.dp,
-                    bottomEnd = 5.dp
-                ),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 10.dp,
-                    pressedElevation = 5.dp,
-                )
-            ) {
-                Text(
-                    text = "Jungle",
-                    fontSize = 25.sp,
-                    lineHeight = 27.sp,
-                    fontFamily = FontFamily(Font(R.font.autour_one)),
-                    textAlign = TextAlign.Center
-                )
-            }
-            Spacer(modifier = Modifier.height(87.dp))
-
-            Button(
-                onClick = { onClick3() },
-                modifier = modifier.fillMaxWidth().padding(start = 17.dp, end = 17.dp),
-                shape = CutCornerShape(
-                    bottomStart = 13.dp,
-                    topEnd = 13.dp,
-                    topStart = 5.dp,
-                    bottomEnd = 5.dp
-                ),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 10.dp,
-                    pressedElevation = 5.dp,
-                )
-            ) {
-                Text(
-                    text = "Savanna",
-                    fontSize = 25.sp,
-                    lineHeight = 27.sp,
-                    fontFamily = FontFamily(Font(R.font.autour_one)),
-                    textAlign = TextAlign.Center
-                )
-            }
+        ) {
+            Text(
+                text = "Garden",
+                fontSize = 25.sp,
+                lineHeight = 27.sp,
+                fontFamily = FontFamily(Font(R.font.autour_one)),
+                textAlign = TextAlign.Center
+            )
         }
+        Spacer(modifier = Modifier.height(87.dp))
+
+        Button(
+            onClick = { onClick2() },
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(start = 17.dp, end = 17.dp),
+            shape = CutCornerShape(
+                bottomStart = 13.dp,
+                topEnd = 13.dp,
+                topStart = 5.dp,
+                bottomEnd = 5.dp
+            ),
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 10.dp,
+                pressedElevation = 5.dp,
+            )
+        ) {
+            Text(
+                text = "Jungle",
+                fontSize = 25.sp,
+                lineHeight = 27.sp,
+                fontFamily = FontFamily(Font(R.font.autour_one)),
+                textAlign = TextAlign.Center
+            )
+        }
+        Spacer(modifier = Modifier.height(87.dp))
+
+        Button(
+            onClick = { onClick3() },
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(start = 17.dp, end = 17.dp),
+            shape = CutCornerShape(
+                bottomStart = 13.dp,
+                topEnd = 13.dp,
+                topStart = 5.dp,
+                bottomEnd = 5.dp
+            ),
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 10.dp,
+                pressedElevation = 5.dp,
+            )
+        ) {
+            Text(
+                text = "Savanna",
+                fontSize = 25.sp,
+                lineHeight = 27.sp,
+                fontFamily = FontFamily(Font(R.font.autour_one)),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
 }
 
 @Composable
@@ -137,7 +144,8 @@ fun GameScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Snake Game",
+        Text(
+            text = "Snake Game",
             modifier = modifier,
             fontSize = 66.5.sp,
             fontWeight = FontWeight.ExtraBold,
@@ -151,7 +159,9 @@ fun GameScreen(
 
         Button(
             onClick = { onClick1() },
-            modifier = modifier.fillMaxWidth().padding(start = 17.dp, end = 17.dp),
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(start = 17.dp, end = 17.dp),
             shape = CutCornerShape(
                 bottomStart = 13.dp,
                 topEnd = 13.dp,
@@ -172,43 +182,20 @@ fun GameScreen(
             )
         }
         Spacer(modifier = Modifier.height(87.dp))
-
-/*        Button(
-            onClick = { onClick2() },
-            modifier = modifier.fillMaxWidth().padding(start = 17.dp, end = 17.dp),
-            shape = CutCornerShape(
-                bottomStart = 13.dp,
-                topEnd = 13.dp,
-                topStart = 5.dp,
-                bottomEnd = 5.dp
-            ),
-            elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = 10.dp,
-                pressedElevation = 5.dp,
-            )
-        ) {
-            Text(
-                text = "High Scores",
-                fontSize = 25.sp,
-                lineHeight = 27.sp,
-                fontFamily = FontFamily(Font(R.font.autour_one)),
-                textAlign = TextAlign.Center
-            )
-        }*/
     }
 }
 
 @Composable
 @Preview
-fun LevelsScreenPreview(){
+fun LevelsScreenPreview() {
     MyApplicationTheme {
-        LevelsScreen({}, {} ,{})
+        LevelsScreen({}, {}, {})
     }
 }
 
 @Composable
 @Preview
-fun GameScreenPreview(){
+fun GameScreenPreview() {
     MyApplicationTheme {
         GameScreen(
             {},

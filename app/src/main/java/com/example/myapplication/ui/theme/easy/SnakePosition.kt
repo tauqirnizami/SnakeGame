@@ -16,30 +16,20 @@ import kotlinx.coroutines.launch
 
 class SnakeViewModel : ViewModel() {
     /*Pair(length/y-coordinate, width/x-coordinate)*/
-//    var coordinates = mutableStateListOf(Pair(14, 14), Pair(15, 14), Pair(16, 14))
-//        private set
     private val _coordinates = MutableStateFlow(listOf(Pair(14, 14), Pair(15, 14), Pair(16, 14)))
     val coordinates: StateFlow<List<Pair<Int, Int>>> = _coordinates
 
     var gameGoing by mutableStateOf(true)
 
-var foodCoordinates: Pair<Int, Int> = Pair(10, 11)
-var score = 0L
-var directions = mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
-var giantFoodCoordinates: Pair<Int, Int>? = null
-private var giantFoodCounter: Int = 1
+    var foodCoordinates: Pair<Int, Int> = Pair(10, 11)
+    var score = 0L
+    var directions =
+        mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
+    var giantFoodCoordinates: Pair<Int, Int>? = null
+    private var giantFoodCounter: Int = 1
 
     init {
- /*       gameGoing = true
-        foodCoordinates = Pair(10, 11)
-        score = 0L
-        directions = mutableStateListOf(0)
-        giantFoodCoordinates = null
-        giantFoodCounter = 1*/
-
         viewModelScope.launch(Dispatchers.Main) {
-//            delay(550L) //This is to let the viewModel to setup properly before being used. I was getting error due to usage of state variable (probably "coordinates") before waiting for the viewModel to be able to initialize properly first
-
             while (gameGoing) {
                 delay(if (score < 500) 500 - score else 0) //This controls the snake speed
                 coordinatesUpdation()
@@ -47,14 +37,14 @@ private var giantFoodCounter: Int = 1
         }
     }
 
-    private fun snakeMove(newHead: Pair<Int, Int>){
+    private fun snakeMove(newHead: Pair<Int, Int>) {
         val currentList = _coordinates.value.toMutableList()
         currentList.add(0, newHead)
         currentList.removeLast()
         _coordinates.value = currentList
     }
 
-    private fun eatFood(){
+    private fun eatFood() {
         val currentList = _coordinates.value.toMutableList()
         currentList.add(currentList.last())
         _coordinates.value = currentList
@@ -63,7 +53,7 @@ private var giantFoodCounter: Int = 1
     private suspend fun coordinatesUpdation() {
 
         // Compute the new head position based on the direction
-        if (directions.size>1) {
+        if (directions.size > 1) {
             directions.removeAt(0)
         }
         val head = _coordinates.value.first()
@@ -78,7 +68,7 @@ private var giantFoodCounter: Int = 1
         snakeMove(newHead = newHead)
 
         //Getting Out
-            val currentList = _coordinates.value.toMutableList()
+        val currentList = _coordinates.value.toMutableList()
         if (currentList.drop(1).any { it == newHead }) {
             gameGoing = false
         }
@@ -88,7 +78,6 @@ private var giantFoodCounter: Int = 1
             foodCoordinates = food(giantFoodCoordinates, currentList = currentList)
             score++
             giantFoodCounter++
-//            coordinates.add(coordinates.last())
             eatFood()
         }
 
@@ -114,7 +103,10 @@ private var giantFoodCounter: Int = 1
         }
     }
 
-    private fun food(otherFood: Pair<Int, Int>?, currentList: List<Pair<Int, Int>>): Pair<Int, Int> {
+    private fun food(
+        otherFood: Pair<Int, Int>?,
+        currentList: List<Pair<Int, Int>>
+    ): Pair<Int, Int> {
         var a: Pair<Int, Int>
         do {
             a = Pair((1..gridLength).random(), (1..gridWidth).random())

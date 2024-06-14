@@ -21,41 +21,12 @@ enum class ScreenNames {
     Difficult
 }
 
-/*@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun GameTopAppBar(
-    modifier: Modifier = Modifier
-        .fillMaxWidth()
-) {
-    TopAppBar(
-        title = {
-                Text(
-                    text = "Snake Game",
-                    textAlign = TextAlign.Center,
-                    color = Color(android.graphics.Color.parseColor("#fba001")),
-                    modifier = Modifier
-                        .padding(9.dp),
-                    fontFamily = FontFamily(Font(R.font.gamja_flower)),
-                    fontSize = 27.sp
-                )
-        },
-        modifier = modifier
-    )
-}*/
-
 @Composable
 fun SnakeGame(
-    modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
 
-    Scaffold(
-/*        topBar = {
-            GameTopAppBar(
-                modifier = modifier
-            )
-        }*/
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = ScreenNames.StartScreen.name,
@@ -75,18 +46,13 @@ fun SnakeGame(
                     onClick3 = { navController.navigate(ScreenNames.Difficult.name) }
                 )
             }
-/*            composable(ScreenNames.HighScore.name) {
-                HighScoresScreen(easyScore = easyList.firstOrNull()?.highScore ?: "0",
-                    mediumScore = mediumList.firstOrNull()?.highScore ?: "0",
-                    difficultScore = mediumList.firstOrNull()?.highScore ?: "0")
-            }*/
             composable(ScreenNames.Easy.name) {
                 Screen(
                     navBack = { navController.navigate(ScreenNames.LevelSelectScreen.name) }
                 )
             }
             composable(ScreenNames.Medium.name) {
-                MediumScreen(navBack = {navController.navigate(ScreenNames.LevelSelectScreen.name)})
+                MediumScreen(navBack = { navController.navigate(ScreenNames.LevelSelectScreen.name) })
             }
             composable(ScreenNames.Difficult.name) {
                 DifficultScreen(

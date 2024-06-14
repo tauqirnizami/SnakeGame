@@ -15,8 +15,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import com.example.myapplication.ui.theme.easy.Screen
-import com.example.myapplication.ui.theme.medium.MediumScreen
 import com.example.myapplication.ui.theme.navigation.SnakeGame
 
 class MainActivity : ComponentActivity() {
@@ -25,10 +23,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-//                    MediumScreen(navBack = {})
-//                    DifficultScreen()
-//                    Screen(navBack = {})
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
                     SnakeGame(navController = rememberNavController())
                 }
             }
@@ -48,9 +46,12 @@ fun GameOverDialogue(
         onDismissRequest = {
             onClose()
         },
-        title = { Text(text = text,
-            textAlign = TextAlign.Justify,
-            fontSize = 17.sp)
+        title = {
+            Text(
+                text = text,
+                textAlign = TextAlign.Justify,
+                fontSize = 17.sp
+            )
         },
         modifier = modifier,
         confirmButton = {
@@ -69,11 +70,3 @@ fun GameOverDialogue(
         }*/
     )
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    MyApplicationTheme {
-////        Greeting("Android")
-//    }
-//}

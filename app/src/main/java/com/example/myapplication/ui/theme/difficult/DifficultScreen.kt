@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,19 +28,11 @@ import com.example.myapplication.ui.theme.easy.ColorGrid
 import com.example.myapplication.ui.theme.easy.gridLength
 import com.example.myapplication.ui.theme.easy.gridWidth
 
-//@Composable
-//fun DifficultDisplayGrid(
-//    modifier: Modifier,
-//    snakeViewModel: DifficultSnakeViewModel
-//) {
-
-//}
-
 @Composable
 fun DifficultScreen(
     modifier: Modifier = Modifier,
     snakeViewModel: DifficultSnakeViewModel = remember { DifficultSnakeViewModel() },
-    navBack: ()-> Unit
+    navBack: () -> Unit
 ) {
     val coordinates by snakeViewModel.coordinates.collectAsState()
     Column(
@@ -50,29 +41,32 @@ fun DifficultScreen(
         modifier = modifier
     ) {
 
-        if (!snakeViewModel.gameGoing){
-            GameOverDialogue(text = "Your Score = ${snakeViewModel.score}",
+        if (!snakeViewModel.gameGoing) {
+            GameOverDialogue(
+                text = "Your Score = ${snakeViewModel.score}",
                 onClose = { navBack() },
-/*                onRetry = {
-                    snakeViewModel.gameGoing = true
-                    snakeViewModel.foodCoordinates = Pair(10, 11)
-                    snakeViewModel.score = 0L
-                    snakeViewModel.directions = mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
-                    snakeViewModel.giantFoodCoordinates = null
-                    snakeViewModel.giantFoodCounter = 1
-                    snakeViewModel.extraWalls = snakeViewModel.extraWallsGenerator()
-                }*/
+                /*                onRetry = {
+                                    snakeViewModel.gameGoing = true
+                                    snakeViewModel.foodCoordinates = Pair(10, 11)
+                                    snakeViewModel.score = 0L
+                                    snakeViewModel.directions = mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
+                                    snakeViewModel.giantFoodCoordinates = null
+                                    snakeViewModel.giantFoodCounter = 1
+                                    snakeViewModel.extraWalls = snakeViewModel.extraWallsGenerator()
+                                }*/
             )
         }
 
-    val colors = difficultGenerateColorGrid(coordinates = coordinates, extraWalls = snakeViewModel.extraWalls,
-        foodCoordinates = snakeViewModel.foodCoordinates, giantFoodCoordinates = snakeViewModel.giantFoodCoordinates)
-    Column {
-        ColorGrid(colors = colors, modifier = modifier)
-        Text(text = "Score = ${snakeViewModel.score}")
-    }
-//        DifficultDisplayGrid(modifier, snakeViewModel = snakeViewModel)
-
+        val colors = difficultGenerateColorGrid(
+            coordinates = coordinates,
+            extraWalls = snakeViewModel.extraWalls,
+            foodCoordinates = snakeViewModel.foodCoordinates,
+            giantFoodCoordinates = snakeViewModel.giantFoodCoordinates
+        )
+        Column {
+            ColorGrid(colors = colors, modifier = modifier)
+            Text(text = "Score = ${snakeViewModel.score}")
+        }
         Row(
             modifier = Modifier,
             verticalAlignment = Alignment.CenterVertically,
@@ -97,15 +91,21 @@ fun DifficultScreen(
     }
 }
 
-fun difficultGenerateColorGrid(coordinates: List<Pair<Int, Int>>, extraWalls: List<Pair<Int, Int>>,
-                               foodCoordinates: Pair<Int, Int>, giantFoodCoordinates: Pair<Int, Int>?): List<Color> {
+fun difficultGenerateColorGrid(
+    coordinates: List<Pair<Int, Int>>, extraWalls: List<Pair<Int, Int>>,
+    foodCoordinates: Pair<Int, Int>, giantFoodCoordinates: Pair<Int, Int>?
+): List<Color> {
     val coloursList: MutableList<Color> = mutableListOf()
     for (i in 1..gridLength) {
         for (j in 1..gridWidth) {
-            if (i == 1 || j == 1 || i == gridLength || j == gridWidth || extraWalls.any{it == Pair(i,j)}){
+            if (i == 1 || j == 1 || i == gridLength || j == gridWidth || extraWalls.any {
+                    it == Pair(
+                        i,
+                        j
+                    )
+                }) {
                 coloursList.add(Color.Red)
-            }
-            else if (coordinates.any { it == Pair(i, j) }) {
+            } else if (coordinates.any { it == Pair(i, j) }) {
                 coloursList.add(Color.DarkGray)
             } else if (Pair(i, j) == foodCoordinates) {
                 coloursList.add(Color.Gray)
