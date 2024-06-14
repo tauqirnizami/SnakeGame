@@ -104,15 +104,15 @@ fun difficultGenerateColorGrid(
                         j
                     )
                 }) {
-                coloursList.add(Color.Red)
+                coloursList.add(Color(0xffee0b0b))
             } else if (coordinates.any { it == Pair(i, j) }) {
-                coloursList.add(Color.DarkGray)
+                coloursList.add(Color(0xfffff200))
             } else if (Pair(i, j) == foodCoordinates) {
-                coloursList.add(Color.Gray)
+                coloursList.add(Color(0xffb5e61d))
             } else if (Pair(i, j) == giantFoodCoordinates) {
-                coloursList.add(Color.Black)
+                coloursList.add(Color(0xff22b14c))
             } else {
-                coloursList.add(Color.White)
+                coloursList.add(Color(0xff99d9ea))
             }
         }
     }
