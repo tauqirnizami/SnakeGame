@@ -21,8 +21,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.ui.theme.easy.ColorGrid
+import com.example.myapplication.ui.theme.easy.GameOverDialogue
 import com.example.myapplication.ui.theme.easy.directions
 import com.example.myapplication.ui.theme.easy.foodCoordinates
+import com.example.myapplication.ui.theme.easy.gameGoing
 import com.example.myapplication.ui.theme.easy.giantFoodCoordinates
 import com.example.myapplication.ui.theme.easy.gridLength
 import com.example.myapplication.ui.theme.easy.gridWidth
@@ -33,7 +35,7 @@ fun DifficultDisplayGrid(
     modifier: Modifier,
     snakeViewModel: DifficultSnakeViewModel
 ) {
-    val colors = difficultGenerateColorGrid(coordinates = snakeViewModel.coordinates, extraWalls = snakeViewModel.extraWalls)
+    val colors = difficultGenerateColorGrid(coordinates = snakeViewModel.coordinates)
     Column {
         ColorGrid(colors = colors, modifier = modifier)
         Text(text = "Score = $score")
@@ -44,13 +46,20 @@ fun DifficultDisplayGrid(
 @Composable
 fun DifficultScreen(
     modifier: Modifier = Modifier,
-    snakeViewModel: DifficultSnakeViewModel = DifficultSnakeViewModel()
+    snakeViewModel: DifficultSnakeViewModel = DifficultSnakeViewModel(),
+    navBack: ()-> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
+
+        if (!gameGoing){
+            GameOverDialogue(text = "Your Score = $score",
+                onClose = { navBack() })
+        }
+
         DifficultDisplayGrid(modifier, snakeViewModel = snakeViewModel)
 
         Row(
@@ -77,7 +86,7 @@ fun DifficultScreen(
     }
 }
 
-fun difficultGenerateColorGrid(coordinates: List<Pair<Int, Int>>, extraWalls: List<Pair<Int, Int>>): List<Color> {
+fun difficultGenerateColorGrid(coordinates: List<Pair<Int, Int>>): List<Color> {
     val coloursList: MutableList<Color> = mutableListOf()
     for (i in 1..gridLength) {
         for (j in 1..gridWidth) {
@@ -102,6 +111,6 @@ fun difficultGenerateColorGrid(coordinates: List<Pair<Int, Int>>, extraWalls: Li
 @Composable
 fun ScreenPreview() {
     MyApplicationTheme {
-        DifficultScreen()
+        DifficultScreen(navBack = {})
     }
 }

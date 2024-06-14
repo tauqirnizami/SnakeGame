@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 var foodCoordinates: Pair<Int, Int> = Pair(10, 11)
@@ -15,15 +17,18 @@ var score = 0L
 var directions = mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.
 var giantFoodCoordinates: Pair<Int, Int>? = null
 var giantFoodCounter: Int = 1
+var gameGoing = true
 
 class SnakeViewModel : ViewModel() {
     /*Pair(length/y-coordinate, width/x-coordinate)*/
-    var coordinates = mutableStateListOf(Pair(14, 14), Pair(15, 14), Pair(16, 14))
-        private set
-
-    private var gameGoing by mutableStateOf(true)
+//    var coordinates = mutableStateListOf(Pair(14, 14), Pair(15, 14), Pair(16, 14))
+//        private set
+    private val _coordinates = MutableStateFlow(listOf(Pair(14, 14), Pair(15, 14), Pair(16, 14)))
+    val coordinates: StateFlow<List<Pair<Int, Int>>> = _coordinates
+//    var gameGoing by mutableStateOf(true)
 
     init {
+        gameGoing = true
         foodCoordinates = Pair(10, 11)
         score = 0L
         directions = mutableStateListOf(0)
@@ -40,13 +45,20 @@ class SnakeViewModel : ViewModel() {
         }
     }
 
+    private fun snakeMove(newHead: Pair<Int, Int>){
+        val currentList = _coordinates.value.toMutableList()
+        currentList.add(0, newHead)
+        currentList.removeLast()
+        _coordinates.value = currentList
+    }
+
     private suspend fun coordinatesUpdation() {
 
         // Compute the new head position based on the direction
         if (directions.size>1) {
             directions.removeAt(0)
         }
-        val head = coordinates.first()
+        val head = _coordinates.value.first()
         val newHead = when (directions[0]) {
             0 -> Pair(if (head.first > 1) head.first - 1 else gridLength, head.second) // UP
             1 -> Pair(if (head.first < gridLength) head.first + 1 else 1, head.second) // DOWN

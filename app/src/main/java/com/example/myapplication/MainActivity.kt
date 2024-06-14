@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import com.example.myapplication.ui.theme.difficult.DifficultScreen
 import com.example.myapplication.ui.theme.easy.Screen
-import com.example.myapplication.ui.theme.medium.MediumScreen
+import com.example.myapplication.ui.theme.navigation.SnakeGame
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,8 +20,9 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
 //                    MediumScreen()
-                    DifficultScreen()
-//                    Screen()
+//                    DifficultScreen()
+                    Screen(navBack = {})
+//                    SnakeGame(navController = rememberNavController())
                 }
             }
         }

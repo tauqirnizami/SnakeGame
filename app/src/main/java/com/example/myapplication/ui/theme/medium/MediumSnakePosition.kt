@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.ui.theme.easy.directions
 import com.example.myapplication.ui.theme.easy.foodCoordinates
+import com.example.myapplication.ui.theme.easy.gameGoing
 import com.example.myapplication.ui.theme.easy.giantFoodCoordinates
 import com.example.myapplication.ui.theme.easy.giantFoodCounter
 import com.example.myapplication.ui.theme.easy.gridLength
@@ -22,9 +23,10 @@ class MediumSnakeViewModel : ViewModel() {
     var coordinates = mutableStateListOf(Pair(14, 14), Pair(15, 14), Pair(16, 14))
         private set
 
-    private var gameGoing by mutableStateOf(true)
+//    var gameGoing by mutableStateOf(true)
 
     init {
+        gameGoing = true
         foodCoordinates = Pair(10, 9)
         score = 0L
         directions = mutableStateListOf(0) //Using a list instead of a single int to keep track when user changes directions too quickly while the viewModel is on delay (the one for speed controlling). Eg., if user enter up and suddenly left as well, the game earlier used to only register the latter command. Using a mutable list  would keep track of all the given commands that currently hasn't been acted on.

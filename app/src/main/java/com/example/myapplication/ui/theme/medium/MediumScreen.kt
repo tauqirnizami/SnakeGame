@@ -23,8 +23,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.ui.theme.easy.ColorGrid
+import com.example.myapplication.ui.theme.easy.GameOverDialogue
 import com.example.myapplication.ui.theme.easy.directions
 import com.example.myapplication.ui.theme.easy.foodCoordinates
+import com.example.myapplication.ui.theme.easy.gameGoing
 import com.example.myapplication.ui.theme.easy.giantFoodCoordinates
 import com.example.myapplication.ui.theme.easy.gridLength
 import com.example.myapplication.ui.theme.easy.gridWidth
@@ -49,13 +51,20 @@ fun MediumDisplayGrid(
 @Composable
 fun MediumScreen(
     modifier: Modifier = Modifier,
-    snakeViewModel: MediumSnakeViewModel = MediumSnakeViewModel()
+    snakeViewModel: MediumSnakeViewModel = MediumSnakeViewModel(),
+    navBack: ()-> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
+
+        if (!gameGoing){
+            GameOverDialogue(text = "Your Score = $score",
+                onClose = { navBack() })
+        }
+
         MediumDisplayGrid(modifier, snakeViewModel = snakeViewModel)
 
         Row(
@@ -107,6 +116,6 @@ fun mediumGenerateColorGrid(coordinates: List<Pair<Int, Int>>): List<Color> {
 @Composable
 fun MediumScreenPreview() {
     MyApplicationTheme {
-        MediumScreen()
+        MediumScreen(navBack = {})
     }
 }

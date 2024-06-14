@@ -16,16 +16,20 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
@@ -49,7 +53,8 @@ fun DisplayGrid(
 @Composable
 fun Screen(
     modifier: Modifier = Modifier,
-    snakeViewModel: SnakeViewModel = SnakeViewModel()
+    snakeViewModel: SnakeViewModel = SnakeViewModel(),
+    navBack: ()-> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -64,6 +69,11 @@ fun Screen(
 //            ColorGrid(colors, modifier = modifier, cellSize = 15.dp)
 //            Text(text = "Score = $score")
 //        }
+        if (!gameGoing){
+            GameOverDialogue(text = "Your Score = $score",
+                onClose = { navBack() })
+        }
+
         DisplayGrid(modifier, snakeViewModel = snakeViewModel)
 
         Row(
@@ -126,10 +136,35 @@ fun ColorGrid(colors: List<Color>, modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun GameOverDialogue(
+    text: String,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    AlertDialog(
+        onDismissRequest = {
+            onClose()
+        },
+        title = { Text(text = text,
+            textAlign = TextAlign.Justify,
+            fontSize = 17.sp)},
+        modifier = modifier,
+        confirmButton = {
+            TextButton(onClick = {
+                onClose()
+            }) {
+                Text(text = "Close")
+            }
+        }
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ScreenPreview() {
     MyApplicationTheme {
-        Screen()
+        Screen(navBack = {})
     }
 }

@@ -128,7 +128,6 @@ fun LevelsScreen(
 @Composable
 fun GameScreen(
     onClick1: () -> Unit,
-    onClick2: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -148,7 +147,7 @@ fun GameScreen(
             fontFamily = FontFamily(Font(R.font.gamja_flower)),
         )
 
-        Spacer(modifier = Modifier.height(131.dp))
+        Spacer(modifier = Modifier.height(151.dp))
 
         Button(
             onClick = { onClick1() },
@@ -174,7 +173,7 @@ fun GameScreen(
         }
         Spacer(modifier = Modifier.height(87.dp))
 
-        Button(
+/*        Button(
             onClick = { onClick2() },
             modifier = modifier.fillMaxWidth().padding(start = 17.dp, end = 17.dp),
             shape = CutCornerShape(
@@ -195,7 +194,7 @@ fun GameScreen(
                 fontFamily = FontFamily(Font(R.font.autour_one)),
                 textAlign = TextAlign.Center
             )
-        }
+        }*/
     }
 }
 
@@ -211,6 +210,8 @@ fun LevelsScreenPreview(){
 @Preview
 fun GameScreenPreview(){
     MyApplicationTheme {
-        GameScreen({}, {})
+        GameScreen(
+            {},
+        )
     }
 }

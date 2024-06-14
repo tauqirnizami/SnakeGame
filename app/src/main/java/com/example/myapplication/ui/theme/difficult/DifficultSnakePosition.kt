@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.ui.theme.easy.directions
 import com.example.myapplication.ui.theme.easy.foodCoordinates
+import com.example.myapplication.ui.theme.easy.gameGoing
 import com.example.myapplication.ui.theme.easy.giantFoodCoordinates
 import com.example.myapplication.ui.theme.easy.giantFoodCounter
 import com.example.myapplication.ui.theme.easy.gridLength
@@ -17,17 +18,47 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+val extraWalls: List<Pair<Int, Int>> = extraWallsGenerator()
+
+fun extraWallsGenerator(): List<Pair<Int, Int>>{
+    val length: MutableList<Int> = mutableListOf()
+    val width: MutableList<Int> = mutableListOf()
+
+    for (i in 3 until gridLength-1){
+        length.add(i)
+    }
+    for (i in 3 until gridWidth-1){
+        width.add(i)
+    }
+
+    length.removeAll(listOf(10, 13, 14, 15, 16,))
+    width.removeAll(listOf(7,8,9, 12,13,14))
+
+    val list: MutableList<Pair<Int, Int>> = mutableListOf()
+    var b: Pair<Int, Int>
+
+    do {
+        b = Pair((0 until length.size).random(), (0 until width.size).random())
+
+        list.add(Pair(length[b.first], width[b.second]))
+        list.add(Pair(list.last().first, list.last().second+1))
+        list.add(Pair(list.last().first, list.last().second+1))
+        list.add(Pair(list.last().first, list.last().second+1))
+
+    }while (list.size<19)
+    return list
+}
+
 class DifficultSnakeViewModel : ViewModel() {
     /*Pair(length/y-coordinate, width/x-coordinate)*/
     var coordinates = mutableStateListOf(Pair(14, 14), Pair(15, 14), Pair(16, 14))
         private set
 
-    private var gameGoing by mutableStateOf(true)
-
     private val eachExtraWallWidthPlusOne = 4
-    val extraWalls: List<Pair<Int, Int>> = listOf(Pair(2,3), Pair(3,4), Pair(4,5))
+//    val extraWalls: List<Pair<Int, Int>> = listOf(Pair(2,3), Pair(3,4), Pair(4,5))
 
     init {
+        gameGoing = true
         foodCoordinates = Pair(10, 9)
         score = 0L
         directions =
