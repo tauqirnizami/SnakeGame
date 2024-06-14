@@ -80,7 +80,7 @@ class DifficultSnakeViewModel : ViewModel() {
 
         //Eating Food
         if (newHead == foodCoordinates) {
-            foodCoordinates = food(giantFoodCoordinates, currentList)
+            foodCoordinates = food(extraWalls + listOf(giantFoodCoordinates), currentList)
             score++
             giantFoodCounter++
             eatFood()
@@ -88,7 +88,7 @@ class DifficultSnakeViewModel : ViewModel() {
 
         //Giant Food
         if (giantFoodCounter % 9 == 0) {
-            giantFoodCoordinates = food(foodCoordinates, currentList)
+            giantFoodCoordinates = food(extraWalls + listOf(foodCoordinates), currentList)
             giantFoodCounter = 1
             viewModelScope.launch(Dispatchers.Default) {
                 delay((if (score < 50) 15 else if (score < 150) 10 else if (score < 300) 6 else 4) * 1000L)
@@ -109,13 +109,13 @@ class DifficultSnakeViewModel : ViewModel() {
     }
 
     private fun food(
-        otherFood: Pair<Int, Int>?,
+        otherFood: List<Pair<Int, Int>?>,
         currentList: List<Pair<Int, Int>>
     ): Pair<Int, Int> {
         var a: Pair<Int, Int>
         do {
             a = Pair((2..<gridLength).random(), (2..<gridWidth).random())
-        } while (currentList.any { it == a } || otherFood == a)
+        } while (currentList.any { it == a } || otherFood.any{it == a})
         return a
     }
 
